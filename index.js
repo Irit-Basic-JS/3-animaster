@@ -47,6 +47,21 @@ function animaster() {
 		element.style.transform = getTransform(null, ratio);
 	}
 
+	animaster.moveAndHide = function (element, duration, translation) {
+		animaster.move(element, duration * 2 / 5, translation);
+		setTimeout(() => animaster.fadeOut(element, duration * 3 / 5), duration * 2 / 5);
+	}
+
+	animaster.showAndHide = function (element, duration) {
+		animaster.fadeIn(element, duration / 3);
+		setTimeout(() => animaster.fadeOut(element, duration / 3), duration * 2 / 3);
+	}
+
+	animaster.heartBeating = function (element, duration, ratio) {
+		animaster.scale(element, duration / 2, ratio);
+		setTimeout(() => animaster.scale(element, duration / 2, 1), duration / 2);
+	}
+
 	return animaster;
 }
 
@@ -54,6 +69,11 @@ function addListeners() {
 	document.getElementById('fadeInPlay').addEventListener('click', function () {
 		const block = document.getElementById('fadeInBlock');
 		animaster().fadeIn(block, 5000);
+	});
+
+	document.getElementById('fadeOutPlay').addEventListener('click', function () {
+		const block = document.getElementById('fadeOutBlock');
+		animaster().fadeOut(block, 5000);
 	});
 
 	document.getElementById('movePlay').addEventListener('click', function () {
@@ -64,6 +84,21 @@ function addListeners() {
 	document.getElementById('scalePlay').addEventListener('click', function () {
 		const block = document.getElementById('scaleBlock');
 		animaster().scale(block, 1000, 1.25);
+	});
+
+	document.getElementById('moveAndHidePlay').addEventListener('click', function () {
+		const block = document.getElementById('moveAndHideBlock');
+		animaster().moveAndHide(block, 1000, {x: 100, y: 20});
+	});
+
+	document.getElementById('showAndHidePlay').addEventListener('click', function () {
+		const block = document.getElementById('showAndHideBlock');
+		animaster().showAndHide(block, 1000);
+	});
+
+	document.getElementById('heartBeatingPlay').addEventListener('click', function () {
+		const block = document.getElementById('heartBeatingBlock');
+		animaster().heartBeating(block, 1000, 1.4);
 	});
 }
 
