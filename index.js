@@ -65,6 +65,17 @@ function animaster() {
 		setInterval(loop, duration);
 	}
 
+	function getTransform(translation, ratio) {
+		const result = [];
+		if (translation) {
+			result.push(`translate(${translation.x}px,${translation.y}px)`);
+		}
+		if (ratio) {
+			result.push(`scale(${ratio})`);
+		}
+		return result.join(' ');
+	}
+
 	return animaster;
 }
 
@@ -73,8 +84,6 @@ function addListeners() {
 		const block = document.getElementById('fadeInBlock');
 		animaster().fadeIn(block, 5000);
 	});
-
-	//addListener(animaster().fadeIn(), 5000);
 
 	document.getElementById('fadeOutPlay').addEventListener('click', function () {
 		const block = document.getElementById('fadeOutBlock');
@@ -105,15 +114,4 @@ function addListeners() {
 		const block = document.getElementById('heartBeatingBlock');
 		animaster().heartBeating(block, 1000, 1.4);
 	});
-}
-
-function getTransform(translation, ratio) {
-	const result = [];
-	if (translation) {
-		result.push(`translate(${translation.x}px,${translation.y}px)`);
-	}
-	if (ratio) {
-		result.push(`scale(${ratio})`);
-	}
-	return result.join(' ');
 }
