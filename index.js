@@ -1,49 +1,85 @@
 addListeners();
 
 
-
 function animaster() {
     return {
         _steps: [],
 
         resetFadeIn(element) {
-            element.style.transitionDuration =  null;
+            element.style.transitionDuration = null;
             element.classList.remove('show');
             element.classList.add('hide');
         },
         resetFadeOut(element) {
-            element.style.transitionDuration =  null;
+            element.style.transitionDuration = null;
             element.classList.remove('hide');
             element.classList.add('show');
         },
         resetMoveAndScale(element) {
-            element.style.transitionDuration =  null;
+            element.style.transitionDuration = null;
             element.style.transform = null;
         },
 
         addMove(duration, transform) {
-            this._steps.push({option(e, d, t) {move(e, d, t)}, duration, transform});
-            return this;
+            let copy = Object.assign({}, this);
+            copy._steps = this._steps.slice();
+            copy._steps.push({
+                option(e, d, t) {
+                    move(e, d, t)
+                }, duration, transform
+            });
+            return copy;
         },
         addScale(duration, transform) {
-            this._steps.push({option(e, d, t) {scale(e, d, t)}, duration, transform});
-            return this;
+            let copy = Object.assign({}, this);
+            copy._steps = this._steps.slice();
+            copy._steps.push({
+                option(e, d, t) {
+                    scale(e, d, t)
+                }, duration, transform
+            });
+            console.log(this._steps);
+            return copy;
         },
         addFadeIn(duration) {
-            this._steps.push({option(e, d) {fadeIn(e, d)}, duration});
-            return this;
+            let copy = Object.assign({}, this);
+            copy._steps = this._steps.slice();
+            copy._steps.push({
+                option(e, d) {
+                    fadeIn(e, d)
+                }, duration
+            });
+            return copy;
         },
         addFadeOut(duration) {
-            this._steps.push({option(e, d) {fadeOut(e, d)}, duration});
-            return this;
+            let copy = Object.assign({}, this);
+            copy._steps = this._steps.slice();
+            copy._steps.push({
+                option(e, d) {
+                    fadeOut(e, d)
+                }, duration
+            });
+            return copy;
         },
         addRotate(duration, transform) {
-            this._steps.push({option(e, d, t) {rotate(e, d, t)}, duration, transform});
-            return this;
+            let copy = Object.assign({}, this);
+            copy._steps = this._steps.slice();
+            copy._steps.push({
+                option(e, d, t) {
+                    rotate(e, d, t)
+                }, duration, transform
+            });
+            return copy;
         },
         addDelay(duration) {
-            this._steps.push({option() {return null}, duration});
-            return this;
+            let copy = Object.assign({}, this);
+            copy._steps = this._steps.slice();
+            copy._steps.push({
+                option() {
+                    return null
+                }, duration
+            });
+            return copy;
         },
         play(element, cycled = false) {
             const elementInvisible = element.classList.contains('hide');
@@ -92,7 +128,6 @@ function animaster() {
         buildHandler() {
             return (el) => this.play(el.target)
         }/*,
-
         move(element, duration, translation) {
             move(element, duration, translation);
         },
@@ -124,7 +159,6 @@ function animaster() {
 }
 
 
-
 function addListeners() {
     let fadeIn;
     document.getElementById('fadeInPlay')
@@ -150,16 +184,18 @@ function addListeners() {
             move.reset();
         });
 
-    let scale;
+    let scalePlay;
+    let scale = animaster().addScale(1000, 1.25);
+    let a = scale.addScale(1000, 1);
     document.getElementById('scalePlay')
         .addEventListener('click', function () {
             const block = document.getElementById('scaleBlock');
-            scale = animaster().addScale(1000, 1.25).play(block);
+            scalePlay = scale.play(block);
         });
 
     document.getElementById('scaleReset')
         .addEventListener('click', function () {
-            scale.reset();
+            scalePlay.reset();
         });
 
     let fadeOut;
@@ -214,7 +250,10 @@ function addListeners() {
             if (heartBeating !== undefined) heartBeating.stop();
         });
 
-    const rotate = animaster().addRotate(1000, 360).buildHandler();
+    const rotate = animaster()
+        .addRotate(1000, 360)
+        .addRotate(0, 0)
+        .buildHandler();
     document.getElementById('rotateBlock').addEventListener('click', rotate);
 }
 
@@ -224,7 +263,7 @@ function addListeners() {
  * @param duration — Продолжительность анимации в миллисекундах
  */
 function fadeIn(element, duration) {
-    element.style.transitionDuration =  `${duration}ms`;
+    element.style.transitionDuration = `${duration}ms`;
     element.classList.remove('hide');
     element.classList.add('show');
 }
@@ -247,18 +286,18 @@ function move(element, duration, translation) {
  * @param ratio — во сколько раз увеличить/уменьшить. Чтобы уменьшить, нужно передать значение меньше 1
  */
 function scale(element, duration, ratio) {
-    element.style.transitionDuration =  `${duration}ms`;
+    element.style.transitionDuration = `${duration}ms`;
     element.style.transform = getTransform(null, ratio, null);
 }
 
 function fadeOut(element, duration) {
-    element.style.transitionDuration =  `${duration}ms`;
+    element.style.transitionDuration = `${duration}ms`;
     element.classList.remove('show');
     element.classList.add('hide');
 }
 
 function rotate(element, duration, rotate) {
-    element.style.transitionDuration =  `${duration}ms`;
+    element.style.transitionDuration = `${duration}ms`;
     element.style.transform = getTransform(null, null, rotate);
 }
 
@@ -268,7 +307,6 @@ function rotate(element, duration, rotate) {
     animaster().move(element, moveDuration, translation);
     return setTimeout(() => animaster().fadeOut(element, hideDuration), moveDuration);
 }
-
 function showAndHide(element, duration) {
     const showAndHideDuration = Math.floor((duration) / 3);
     const restDuration = duration - showAndHideDuration * 2;
@@ -276,7 +314,6 @@ function showAndHide(element, duration) {
     setTimeout(null, restDuration);
     setTimeout(() => animaster().fadeOut(element, showAndHideDuration), showAndHideDuration + restDuration);
 }
-
 function heartBeating(element, duration, ratio) {
     animaster().scale(element, duration, ratio);
     setTimeout(() => animaster().scale(element, duration, 1), duration);
