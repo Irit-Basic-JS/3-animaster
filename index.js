@@ -3,51 +3,54 @@ addListeners();
 function addListeners() {
 
 //region SimpleCommands
+    let resetFadeIn = undefined;
     document.getElementById('fadeInPlay')
         .addEventListener('click', function () {
             const block = document.getElementById('fadeInBlock');
-            animaster().addFadeIn(5000).play(block);
+            resetFadeIn = animaster().addFadeIn(5000).play(block);
         });
     document.getElementById('fadeInReset')
         .addEventListener('click', function () {
             const block = document.getElementById('fadeInBlock');
-            animaster().resetFadeIn(block);
+            resetFadeIn.reset(block);
         });
 
-
+    let resetFadeOut = undefined;
     document.getElementById('fadeOutPlay')
         .addEventListener('click', function () {
             const block = document.getElementById('fadeOutBlock');
-            animaster().addFadeOut(5000).play(block);
+            resetFadeOut = animaster().addFadeOut(5000).play(block);
         });
     document.getElementById('fadeOutReset')
         .addEventListener('click', function () {
             const block = document.getElementById('fadeOutBlock');
-            animaster().resetFadeOut(block);
+            resetFadeOut.reset(block);
         });
 
-
+    let resetMovePlay = undefined;
     document.getElementById('movePlay')
         .addEventListener('click', function () {
             const block = document.getElementById('moveBlock');
-            animaster().addMove(1000, {x: 100, y: 10}).play(block);
+            resetMovePlay = animaster()
+                .addMove(1000, {x: 100, y: 10})
+                .play(block);
         });
     document.getElementById('moveReset')
         .addEventListener('click', function () {
             const block = document.getElementById('moveBlock');
-            animaster().resetMoveAndScale(block);
+            resetMovePlay.reset(block);
         });
 
-
+    let resetScale = undefined;
     document.getElementById('scalePlay')
         .addEventListener('click', function () {
             const block = document.getElementById('scaleBlock');
-            animaster().addScale(1000, 1.25).play(block);
+            resetScale = animaster().addScale(1000, 1.25).play(block);
         });
     document.getElementById('scaleReset')
         .addEventListener('click', function () {
             const block = document.getElementById('scaleBlock');
-            animaster().resetMoveAndScale(block);
+            resetScale.reset(block);
         });
 
     let backgroundReset = undefined;
@@ -92,7 +95,7 @@ function addListeners() {
     document.getElementById('heartBeating')
         .addEventListener('click', function () {
             const block = document.getElementById('heartBeatingBlock');
-            stop = animaster()
+            heartBeatingStop = animaster()
                 .addHeartBeating()
                 .play(block, true);
         });
@@ -105,10 +108,10 @@ function addListeners() {
     document.getElementById('comboPlay')
         .addEventListener('click', function () {
             const block = document.getElementById('comboBlock');
-            // let a = animaster().addScale(300, 0.1);
-            // let b = a.addScale(500, 1,1);
-            // console.log(a._steps);
-            // console.log(b._steps);
+            let a = animaster().addScale(300, 0.1);
+            let b = a.addScale(500, 1,1);
+            console.log(a._steps);
+            console.log(b._steps);
             comboReset = animaster()
                 .addFadeIn(500)
                 .addMove(200, {x: 40, y: 40})
@@ -184,7 +187,7 @@ function animaster() {
             element.style.backgroundColor = color;
         }
     }
-
+    //region CommandsAdd
     this.addMoveAndHide = function (duration, translation) {
         this.addMove(duration * 0.4, translation);
         this.addFadeOut(duration * 0.6);
@@ -199,8 +202,8 @@ function animaster() {
     };
 
     this.addHeartBeating = function () {
-        this.addScale(500, 1.4);
-        this.addScale(500, 1);
+        this.addScale(300, 1.4);
+        this.addScale(300, 1);
         return this;
     };
 
@@ -236,13 +239,14 @@ function animaster() {
         this._steps.push({command: "changeBackGroundColor", duration, color});
         return this;
     }
+//endregion
 
-    this.play = function (element, cycled = false) { // TODO NEED REFACTOR
+    this.play = function (element, cycled = false) {
         let flag = element.classList.contains("show") || !element.classList.contains("hide");
         let arrayTimeOut = [];
-        let duration = 0;
         let _interval = undefined;
-        let f = () => {
+        let runCommands = () => {
+            let duration = 0;
             for (const anim of this._steps) {
                 arrayTimeOut.push(setTimeout(() =>
                     simpleCommands[anim["command"]](element, anim["duration"],
@@ -251,9 +255,10 @@ function animaster() {
             }
         };
         if (cycled) {
-            _interval = setInterval(() => f(), this._steps.reduce((a, b) => a["duration"] + b["duration"]));
+            _interval = setInterval(() => runCommands(),
+                this._steps.reduce((a, b) => a["duration"] + b["duration"]));
         } else {
-            f();
+            runCommands();
         }
 
         return {
@@ -265,7 +270,9 @@ function animaster() {
                     simpleCommands.resetFadeIn(element);
                 simpleCommands.resetMoveAndScale(element);
             },
-            stop: () => clearInterval(_interval)
+            stop: () => {
+                clearInterval(_interval);
+            }
         }
     };
 
