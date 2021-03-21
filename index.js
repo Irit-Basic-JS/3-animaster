@@ -65,7 +65,7 @@ function addListeners() {
             //animaster().showAndHide(block, 3000);
             animaster()
                 .addFadeIn(1000)
-                //.addMove(1000, {x: 0, y: 0})
+                .addDelay(1000)
                 .addFadeOut(1000)
                 .play(block);
         });
@@ -73,7 +73,11 @@ function addListeners() {
     document.getElementById('heartBeatingPlay')
         .addEventListener('click', function() {
             const block = document.getElementById('heartBeatingBlock');
-            heartBeatingStop = animaster().heartBeating(block);
+            //heartBeatingStop = animaster().heartBeating(block);
+            heartBeatingStop = animaster()
+                .addScale(500, 1.4)
+                .addScale(500, 1)
+                .play(block, true);
         });
 
     document.getElementById('heartBeatingStop')
@@ -125,34 +129,62 @@ class Animaster{
         return this;
     }
 
+    addDelay(duration) {
+        console.log('addDelay');
+        this.#steps.push({method: 'delay', duration});
+        return this;
+    }
+
     addFadeOut(duration) {
         console.log('addFadeOut');
         this.#steps.push({method: 'fadeOut', duration});
         return this;
     }
 
-    play(element) {
+    play(element, cycled) {
+        let methods = [];
+
         let start = 0;
         for (let step of this.#steps) {
-            this.performCommand(step, element, start);
+            let command = this.prepareCommand(step, element, start);
             start += step.duration;
+            methods.push(command);
+        }
+
+        let perfomMethods = function() {
+            for (let m of methods) {
+                m();
+            }
+        };
+
+        if (cycled) {
+            let timerId = setInterval(perfomMethods, start);
+    
+            let stop = function() {
+                clearInterval(timerId);
+            };
+    
+            return {
+                stop
+            }
+        }
+        else {
+            perfomMethods();
         }
     }
     
-    performCommand(stepElement, element, start) {
+    prepareCommand(stepElement, element, start) {
         switch(stepElement.method) {
             case 'move': 
-                setTimeout(() => this.move.call(this, element, stepElement.duration, stepElement.translation), start);
-                break;
+                return () => setTimeout(() => this.move.call(this, element, stepElement.duration, stepElement.translation), start);
             case 'scale':
-                setTimeout(() => this.scale.call(this, element, stepElement.duration, stepElement.ratio), start);
-                break;
+                return () =>setTimeout(() => this.scale.call(this, element, stepElement.duration, stepElement.ratio), start);
             case 'fadeIn':
-                setTimeout(() => this.fadeIn.call(this, element, stepElement.duration), start);
-                break;
+                return () =>setTimeout(() => this.fadeIn.call(this, element, stepElement.duration), start);
             case 'fadeOut':
-                setTimeout(() => this.fadeOut.call(this, element, stepElement.duration), start);
-                break;
+                return () =>setTimeout(() => this.fadeOut.call(this, element, stepElement.duration), start);
+            case 'delay':
+                return () => setTimeout(function() { console.log('delay'); }, start);
         }
     }
 
