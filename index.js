@@ -1,5 +1,7 @@
 addListeners();
 
+let heartBeatingStop;
+
 function addListeners() {
     // for (let method in new Animaster()) {
     //     let div = document.createElement('div');
@@ -27,7 +29,9 @@ function addListeners() {
     document.getElementById('movePlay')
         .addEventListener('click', function () {
             const block = document.getElementById('moveBlock');
-            animaster().move(block, 1000, {x: 100, y: 10});
+            animaster()
+                .addMove(1000, {x: 100, y: 10})
+                .play(block);
         });
 
     document.getElementById('scalePlay')
@@ -42,6 +46,12 @@ function addListeners() {
             animaster().moveAndHide(block, 5000);
         });
 
+    document.getElementById('moveAndHideReset')
+        .addEventListener('click', function() {
+            const block = document.getElementById('moveAndHideBlock');
+            animaster().resetMoveAndHide(block);
+        });
+
     document.getElementById('showAndHidePlay')
         .addEventListener('click', function() {
             const block = document.getElementById('showAndHideBlock');
@@ -51,8 +61,13 @@ function addListeners() {
     document.getElementById('heartBeatingPlay')
         .addEventListener('click', function() {
             const block = document.getElementById('heartBeatingBlock');
-            animaster().heartBeating(block);
+            heartBeatingStop = animaster().heartBeating(block);
         });
+
+    document.getElementById('heartBeatingStop')
+        .addEventListener('click', function() {
+            heartBeatingStop.stop();
+        });   
 }
 
 function animaster() {
@@ -60,6 +75,31 @@ function animaster() {
 }
 
 class Animaster{
+    static stopFadeOutTimerId = 0;
+
+    #steps = [];
+
+    addMove(duration, translation) {
+        this.#steps.push({method:'move', duration, translation});
+        return this;
+    }
+
+    play(element) {
+        let start = 0;
+        for (let step of this.#steps) {
+            this.performCommand(step, element, start);
+            start += step.duration;
+        }
+    }
+    
+    performCommand(stepElement, element, start) {
+        switch(stepElement.method) {
+            case 'move': 
+            setTimeout(this.move.call(this, element, stepElement.duration, stepElement.translation), start);
+            break;
+        }
+    }
+
     /**
      * Блок плавно перемещается, а затем исчезает.
      * @param element — HTMLElement, который надо анимировать
@@ -69,7 +109,13 @@ class Animaster{
         let firstDuration = duration * 2 / 5;
         let secondDuration = duration - firstDuration;
         this.move(element, firstDuration, {x: 100, y: 20});
-        setTimeout(this.fadeOut, firstDuration, element, secondDuration)
+        Animaster.stopFadeOutTimerId = setTimeout(this.fadeOut, firstDuration, element, secondDuration)
+    }
+
+    resetMoveAndHide(element) {
+        clearTimeout(Animaster.stopFadeOutTimerId);
+        this.#resetMoveAndScale(element);
+        this.#resetFadeOut(element);
     }
 
     showAndHide(element, duration) {
@@ -83,7 +129,14 @@ class Animaster{
             this.scale(element, 500, 1.4);
             setTimeout(() => this.scale.call(this, element, 500, 1), 500);
         }
-        setInterval(cicle, 1000);
+        let timerId = setInterval(cicle, 1000);
+        let stop = function() {
+            clearInterval(timerId);
+        };
+
+        return {
+            stop
+        }
     }
 
     /**
@@ -108,6 +161,10 @@ class Animaster{
         element.style.transform = this.getTransform(translation, null);
     }
 
+    #resetMoveAndScale(element) {
+        element.style = null;
+    }
+
     /**
      * Блок плавно появляется из прозрачного.
      * @param element — HTMLElement, который надо анимировать
@@ -117,6 +174,12 @@ class Animaster{
         element.style.transitionDuration = `${duration}ms`;
         element.classList.remove('hide');
         element.classList.add('show');
+    }
+    
+    #resetFadeIn(element) {
+        element.style = null;
+        element.classList.remove('show');
+        element.classList.add('hide');
     }
 
     /**
@@ -128,6 +191,12 @@ class Animaster{
         element.style.transitionDuration = `${duration}ms`;
         element.classList.remove('show');
         element.classList.add('hide');
+    }
+
+    #resetFadeOut(element) {
+        element.style = null;
+        element.classList.remove('hide');
+        element.classList.add('show');
     }
 
     getTransform(translation, ratio) {
