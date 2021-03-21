@@ -108,8 +108,10 @@ function addListeners() {
     document.getElementById('comboPlay')
         .addEventListener('click', function () {
             const block = document.getElementById('comboBlock');
-            let a = animaster().addScale(300, 0.1);
-            let b = a.addScale(500, 1,1);
+            let a = animaster().addScale(300, 0.1)
+                .addMove(300, {x:40, y: 40});
+            let b = a.addScale(500, 1,1)
+                    .addChangeBackGroundColor(500, "black");
             console.log(a._steps);
             console.log(b._steps);
             comboReset = animaster()
@@ -143,6 +145,12 @@ function addListeners() {
 
 function animaster() {
     this._steps = [];
+    this._copy = function () {
+        let copy = Object.assign({}, this);
+        copy._steps = copy._steps.slice();
+        return copy
+    }
+
     let simpleCommands = {
         fadeIn (element, duration) {
             element.style.transitionDuration = `${duration}ms`;
@@ -189,55 +197,58 @@ function animaster() {
     }
     //region CommandsAdd
     this.addMoveAndHide = function (duration, translation) {
-        this.addMove(duration * 0.4, translation);
-        this.addFadeOut(duration * 0.6);
-        return this;
+        let copy = this.addMove(duration * 0.4, translation);
+        copy = copy.addFadeOut(duration * 0.6);
+        return copy;
     };
 
     this.addShowAndHide = function (duration) {
-        this._steps = this.addFadeIn(duration * 1 / 3)._steps;
-        this.addDelay(duration * 1 / 3);
-        this.addFadeOut(duration * 1 / 3);
-        return this;
+        let copy = this.addFadeIn(duration * 1 / 3)._steps;
+        copy = copy.addDelay(duration * 1 / 3);
+        copy = copy.addFadeOut(duration * 1 / 3);
+        return copy;
     };
 
     this.addHeartBeating = function () {
-        this.addScale(300, 1.4);
-        this.addScale(300, 1);
-        return this;
+        let copy = this.addScale(300, 1.4);
+        copy = copy.addScale(300, 1);
+        return copy;
     };
 
     this.addFadeIn = function (duration) {
-        this._steps.push({command: "fadeIn", duration});
-        return this;
+        let copy = this._copy();
+        copy._steps.push({command: "fadeIn", duration});
+        return copy;
     };
 
     this.addFadeOut = function (duration) {
-        this._steps.push({command: "fadeOut", duration});
-        return this;
+        let copy = this._copy();
+        copy._steps.push({command: "fadeOut", duration});
+        return copy;
     }
 
     this.addMove = function (duration, translation) {
-        this._steps.push({command: "move", duration, translation});
-        return this;
+        let copy = this._copy();
+        copy._steps.push({command: "move", duration, translation});
+        return copy;
     };
 
     this.addScale = function (duration, ratio) {
-        this._steps.push({command: "scale", duration, ratio});
-        // let copy = Object.assign({}, this);
-        // copy._steps = copy._steps.slice();
-        // copy._steps.push({command: "scale", duration, ratio});
-        return this;
+        let copy = this._copy();
+        copy._steps.push({command: "scale", duration, ratio});
+        return copy;
     };
 
     this.addDelay = function (duration) {
-        this._steps.push({duration});
-        return this;
+        let copy = this._copy();
+        copy._steps.push({duration});
+        return copy;
     };
 
     this.addChangeBackGroundColor = function (duration, color) {
-        this._steps.push({command: "changeBackGroundColor", duration, color});
-        return this;
+        let copy = this._copy();
+        copy._steps.push({command: "changeBackGroundColor", duration, color});
+        return copy;
     }
 //endregion
 
