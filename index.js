@@ -1,42 +1,46 @@
 class Animaster{
     static stopFadeOutTimerId = 0;
 
-    #steps = [];
+    constructor(steps) {
+        if (steps) {
+            this.#steps = new Array(...steps);
+        }
+        else {
+            this.#steps = [];
+        }
+    }
+
+    #steps;
 
     addMove(duration, translation) {
-        console.log('addMove');
-        this.#steps.push({method:'move', duration, translation});
-        return this;
+        return this.#addMethod('move', duration, translation);
     }
 
     addScale(duration, ratio) {
-        console.log('addScale');
-        this.#steps.push({method:'scale', duration, ratio});
-        return this;
+        return this.#addMethod('scale', duration, undefined, ratio);
     }
 
     addFadeIn(duration) {
-        console.log('addFadeIn');
-        this.#steps.push({method: 'fadeIn', duration});
-        return this;
+        return this.#addMethod('fadeIn', duration);
     }
 
     addDelay(duration) {
-        console.log('addDelay');
-        this.#steps.push({method: 'delay', duration});
-        return this;
+        return this.#addMethod('delay', duration);
     }
 
     addFadeOut(duration) {
-        console.log('addFadeOut');
-        this.#steps.push({method: 'fadeOut', duration});
-        return this;
+        return this.#addMethod('fadeOut', duration);
     }
 
     addChangeColor(duration) {
-        console.log('addChangeColor');
-        this.#steps.push({method: 'changeColor', duration});
-        return this;
+        return this.#addMethod('changeColor', duration);
+    }
+
+    #addMethod(methodName, duration, translation, ratio) {
+        console.log('add' + methodName.charAt(0).toUpperCase() + methodName.slice(1));
+        let newAnim = new Animaster(this.#steps);
+        newAnim.#steps.push({method: methodName, duration, translation, ratio});
+        return newAnim;
     }
 
     buildHandler(cycled) {
@@ -304,7 +308,9 @@ let heartBeatingStop,
     moveReset,
     scaleReset,
     customAnimationReset,
-    changeColorReset;
+    changeColorReset,
+    moveAndScaleOnly,
+    moveOrMoveAndScaleReset;
 
 function animaster() {
     return new Animaster();
@@ -320,7 +326,31 @@ function addListeners() {
 
     //     let h3 = document.createElement('h3');
     //     h3.classList.add('animation-name');
-    // }
+    // } 
+
+    document.getElementById('moveOrMoveAndScale_Move')
+        .addEventListener('click', function () {
+            const block = document.getElementById('moveOrMoveAndScaleBlock');
+            const moveOnly = animaster().addMove(2000, {x:100, y:20});
+            moveAndScaleOnly = moveOnly.addScale(3000, 1.4);
+            moveOrMoveAndScaleReset = moveOnly.play(block);
+        });
+
+    document.getElementById('moveOrMoveAndScale_MoveAndScale')
+        .addEventListener('click', function () {
+            const block = document.getElementById('moveOrMoveAndScaleBlock');
+            if (moveAndScaleOnly) {
+                moveOrMoveAndScaleReset = moveAndScaleOnly.play(block);
+            }
+        });
+
+    document.getElementById('moveOrMoveAndScale_Reset')
+        .addEventListener('click', function () {
+            if (moveOrMoveAndScaleReset) {
+                moveOrMoveAndScaleReset.reset();
+                moveOrMoveAndScaleReset = undefined;
+            }
+        });
 
     document.getElementById('changeColorPlay')
         .addEventListener('click', function () {
