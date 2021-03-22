@@ -33,6 +33,12 @@ class Animaster{
         return this;
     }
 
+    addChangeColor(duration) {
+        console.log('addChangeColor');
+        this.#steps.push({method: 'changeColor', duration});
+        return this;
+    }
+
     buildHandler(cycled) {
         let animaser = this;
         return function() {
@@ -135,6 +141,15 @@ class Animaster{
                     return () => {
                         console.log('reseting_delay');
                         clearTimeout(timerId);
+                    }
+                }
+            case 'changeColor':
+                return () => {
+                    let timerId = setTimeout(() => this.changeColor.call(this, element, stepElement.duration), start);
+                    return () => {
+                        console.log('reseting_changeColor');
+                        clearTimeout(timerId);
+                        this.#resetChangeColor.call(this, element);
                     }
                 }
         }
@@ -256,6 +271,17 @@ class Animaster{
         element.classList.add('show');
     }
 
+    changeColor(element, duration) {
+        console.log('changeColor');
+        element.style.transitionDuration = `${duration}ms`;
+        element.classList.add('red');
+    }
+
+    #resetChangeColor(element) {
+        element.style = null;
+        element.classList.remove('red');
+    }
+
     getTransform(translation, ratio) {
         const result = [];
         if (translation) {
@@ -277,7 +303,8 @@ let heartBeatingStop,
     fadeOutReset,
     moveReset,
     scaleReset,
-    customAnimationReset;
+    customAnimationReset,
+    changeColorReset;
 
 function animaster() {
     return new Animaster();
@@ -294,6 +321,19 @@ function addListeners() {
     //     let h3 = document.createElement('h3');
     //     h3.classList.add('animation-name');
     // }
+
+    document.getElementById('changeColorPlay')
+        .addEventListener('click', function () {
+            const block = document.getElementById('changeColorBlock');
+            //animaster().changeColor(block, 1000);
+            changeColorReset = animaster().addChangeColor(1000).play(block);
+        });
+    
+    document.getElementById('changeColorReset')
+        .addEventListener('click', function () {
+            const block = document.getElementById('changeColorBlock');
+            changeColorReset.reset();
+        });
 
     //const fadeInPlayHandler = animaster().addFadeIn(5000).buildHandler(false);
 
