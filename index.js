@@ -1,6 +1,10 @@
 class Animaster {
-	constructor() {
-		this._steps = [];
+	constructor(steps) {
+		if (steps) {
+			this._steps = steps.slice();
+		} else {
+			this._steps = [];
+		}
 	}
 	
 	scale(element, step) {
@@ -49,8 +53,27 @@ class Animaster {
 		};
 	}
 	
+	flicker(element, duration) {
+		element.style.duration = `${duration}ms`;
+		for (let i = 0X0; i < 0xffffff; i += 100) {
+			setTimeout(function () {
+				let str = i.toString(16);
+				str = str.padStart(6, "0");
+				element.style.backgroundColor = `#${str}`;
+			}, 5);
+		}
+	}
+	
 	stopHeartBeating() {
 		clearInterval(this._id);
+	}
+	
+	addFlicker(duration) {
+		this._steps.push({
+			animation: this.flicker,
+			duration: duration,
+		});
+		return new Animaster(this._steps);
 	}
 	
 	addMove(duration, translation) {
@@ -59,7 +82,7 @@ class Animaster {
 			duration: duration,
 			translation: translation,
 		});
-		return this;
+		return new Animaster(this._steps);
 	}
 	
 	addScale(duration, scale) {
@@ -68,7 +91,7 @@ class Animaster {
 			duration: duration,
 			scale: scale,
 		});
-		return this;
+		return new Animaster(this._steps);
 	}
 	
 	addMoveAndHide(duration, translation) {
@@ -77,7 +100,7 @@ class Animaster {
 			translation: translation,
 			animation: this.moveAndHide,
 		});
-		return this;
+		return new Animaster(this._steps);
 	}
 	
 	addShowAndHide(duration) {
@@ -85,7 +108,7 @@ class Animaster {
 			animation: this.showAndHide,
 			duration: duration,
 		});
-		return this;
+		return new Animaster(this._steps);
 	}
 	
 	addHeartBeating() {
@@ -93,7 +116,7 @@ class Animaster {
 			animation: this.heartBeating,
 			animaster: this,
 		});
-		return this;
+		return new Animaster(this._steps);
 	}
 	
 	addFadeOut(duration) {
@@ -101,7 +124,7 @@ class Animaster {
 			animation: this.fadeOut,
 			duration: duration,
 		});
-		return this;
+		return new Animaster(this._steps);
 	}
 	
 	addFadeIn(duration) {
@@ -109,7 +132,7 @@ class Animaster {
 			animation: this.fadeIn,
 			duration: duration,
 		});
-		return this;
+		return new Animaster(this._steps);
 	}
 	
 	play(element, cycled = false) {
@@ -178,7 +201,7 @@ class Animaster {
 	}
 }
 
-const customAnimation = new Animaster()
+const anim = new Animaster()
 .addMove(200, {x: 40, y: 40})
 .addScale(800, 1.3)
 .addMove(200, {x: 80, y: 0})
@@ -188,7 +211,7 @@ const customAnimation = new Animaster()
 .addMove(200, {x: 0, y: 0})
 .addScale(800, 1);
 const block = document.getElementById("testBlock")
-.addEventListener("click", customAnimation.buildHandler());
+.addEventListener("click", anim.buildHandler());
 
 addListeners();
 
@@ -215,6 +238,7 @@ function addListeners() {
 	addListener("fadeOut", "Reset", (block) => anim.resetFadeOut(block));
 	addListener("scale", "Reset", (block) => anim.resetMoveOrScale(block));
 	addListener("move", "Reset", (block) => anim.resetMoveOrScale(block));
+	addListener("changeColor", "Play", (block) => anim.flicker(block, 1000));
 }
 
 function getTransform(translation, ratio) {
