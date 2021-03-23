@@ -158,96 +158,48 @@ function animaster() {
     };
 }
 
+function Listener(anim, addedAnim, cycled = false) {
+    let playAnim;
+    document.getElementById(anim + 'Play')
+        .addEventListener('click', function () {
+            const block = document.getElementById(anim + 'Block');
+            playAnim = addedAnim.play(block, cycled);
+        });
+    if (cycled) {
+        document.getElementById(anim + 'Stop')
+            .addEventListener('click', function () {
+                if (playAnim !== undefined) playAnim.stop();
+            });
+    } else {
+        document.getElementById(anim + 'Reset')
+            .addEventListener('click', function () {
+                playAnim.reset();
+            });
+    }
+}
 
 function addListeners() {
-    let fadeIn;
-    document.getElementById('fadeInPlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('fadeInBlock');
-            fadeIn = animaster().addFadeIn(5000).play(block);
-        });
+    Listener('fadeIn',
+        animaster().addFadeIn(5000));
+    Listener('move',
+        animaster().addMove(5000, {x: 100, y: 10}));
+    Listener('scale',
+        animaster().addScale(1000, 1.25));
+    Listener('fadeOut',
+        animaster().addFadeOut(5000));
+    Listener('moveAndHide',
+        animaster().addMove(400, {x: 100, y: 20}).addFadeOut(400));
+    Listener('heartBeating',
+        animaster().addScale(500, 1.4).addScale(500, 1),
+        true);
 
-    document.getElementById('fadeInReset')
-        .addEventListener('click', function () {
-            fadeIn.reset();
-        });
-
-    let move;
-    document.getElementById('movePlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('moveBlock');
-            move = animaster().addMove(5000, {x: 100, y: 10}).play(block);
-        });
-
-    document.getElementById('moveReset')
-        .addEventListener('click', function () {
-            move.reset();
-        });
-
-    let scalePlay;
-    let scale = animaster().addScale(1000, 1.25);
-    let a = scale.addScale(1000, 1);
-    document.getElementById('scalePlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('scaleBlock');
-            scalePlay = scale.play(block);
-        });
-
-    document.getElementById('scaleReset')
-        .addEventListener('click', function () {
-            scalePlay.reset();
-        });
-
-    let fadeOut;
-    document.getElementById('fadeOutPlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('fadeOutBlock');
-            fadeOut = animaster().addFadeOut(5000).play(block);
-        });
-
-    document.getElementById('fadeOutReset')
-        .addEventListener('click', function () {
-            fadeOut.reset();
-        });
-
-    let moveAndHide;
-    document.getElementById('moveAndHidePlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('moveAndHideBlock');
-            moveAndHide = animaster()
-                .addMove(400, {x: 100, y: 20})
-                .addFadeOut(400)
-                .play(block);
-        });
-
-    document.getElementById('moveAndHideReset')
-        .addEventListener('click', function () {
-            moveAndHide.reset();
-        });
-
+    let showAndHidePlay;
+    let showAndHide = animaster().addFadeIn(500).addDelay(500);
+    let a = showAndHide.addScale(1000, 1);
     document.getElementById('showAndHidePlay')
         .addEventListener('click', function () {
             const block = document.getElementById('showAndHideBlock');
-            animaster()
-                .addFadeIn(500)
-                .addDelay(500)
-                .addFadeOut(500)
-                .play(block);
-        });
-
-    let heartBeating;
-    document.getElementById('heartBeatingPlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('heartBeatingBlock');
-            heartBeating = animaster()
-                .addScale(500, 1.4)
-                .addScale(500, 1)
-                .play(block, true);
-        });
-
-    document.getElementById('heartBeatingStop')
-        .addEventListener('click', function () {
-            if (heartBeating !== undefined) heartBeating.stop();
+            showAndHidePlay = showAndHide.addFadeOut(500).play(block);
         });
 
     const rotate = animaster()
