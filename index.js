@@ -2,97 +2,30 @@ addListeners();
 
 function addListeners() {
 
-//region SimpleCommands
-    let resetFadeIn = undefined;
-    document.getElementById('fadeInPlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('fadeInBlock');
-            resetFadeIn = animaster().addFadeIn(5000).play(block);
-        });
-    document.getElementById('fadeInReset')
-        .addEventListener('click', function () {
-            const block = document.getElementById('fadeInBlock');
-            resetFadeIn.reset(block);
-        });
+    function addHandlerOnButton(id, animation) {
+        let reset = undefined;
+        document.getElementById(`${id}Play`)
+            .addEventListener('click', function () {
+                const block = document.getElementById(`${id}Block`);
+                reset = animation.play(block);
+            });
+        document.getElementById(`${id}Reset`)
+            .addEventListener('click', function () {
+                const block = document.getElementById(`${id}Block`);
+                reset.reset(block);
+            });
+    }
 
-    let resetFadeOut = undefined;
-    document.getElementById('fadeOutPlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('fadeOutBlock');
-            resetFadeOut = animaster().addFadeOut(5000).play(block);
-        });
-    document.getElementById('fadeOutReset')
-        .addEventListener('click', function () {
-            const block = document.getElementById('fadeOutBlock');
-            resetFadeOut.reset(block);
-        });
-
-    let resetMovePlay = undefined;
-    document.getElementById('movePlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('moveBlock');
-            resetMovePlay = animaster()
-                .addMove(1000, {x: 100, y: 10})
-                .play(block);
-        });
-    document.getElementById('moveReset')
-        .addEventListener('click', function () {
-            const block = document.getElementById('moveBlock');
-            resetMovePlay.reset(block);
-        });
-
-    let resetScale = undefined;
-    document.getElementById('scalePlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('scaleBlock');
-            resetScale = animaster().addScale(1000, 1.25).play(block);
-        });
-    document.getElementById('scaleReset')
-        .addEventListener('click', function () {
-            const block = document.getElementById('scaleBlock');
-            resetScale.reset(block);
-        });
-
-    let backgroundReset = undefined;
-    document.getElementById('backgroundPlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('backgroundBlock');
-            backgroundReset = animaster()
-                .addChangeBackGroundColor(1000, "black")
-                .play(block);
-        });
-    document.getElementById('backgroundReset')
-        .addEventListener('click', function () {
-            const block = document.getElementById('backgroundBlock');
-            backgroundReset.reset(block);
-        });
-
-//endregion
-
-    let resetMoveAndHide = undefined;
-    document.getElementById('moveAndHide')
-        .addEventListener('click', function () {
-            const block = document.getElementById('moveAndHideBlock');
-            resetMoveAndHide = animaster()
-                .addMoveAndHide(2000, {x: 100, y: 20})
-                .play(block);
-        });
-    document.getElementById('moveAndHideReset')
-        .addEventListener('click', function () {
-            const block = document.getElementById('moveAndHideBlock');
-            resetMoveAndHide.reset(block);
-        });
-
-    document.getElementById('showAndHide')
-        .addEventListener('click', function () {
-            const block = document.getElementById('showAndHideBlock');
-            animaster()
-                .addShowAndHide(2000)
-                .play(block);
-        });
+    addHandlerOnButton('fadeIn', animaster().addFadeIn(5000));
+    addHandlerOnButton('fadeOut', animaster().addFadeOut(5000));
+    addHandlerOnButton('move', animaster().addMove(1000, {x: 100, y: 10}));
+    addHandlerOnButton('scale', animaster().addScale(1000, 1.25));
+    addHandlerOnButton('background', animaster().addChangeBackGroundColor(1000, "black"));
+    addHandlerOnButton('moveAndHide', animaster().addMoveAndHide(2000, {x: 100, y: 20}));
+    addHandlerOnButton('showAndHide', animaster().addShowAndHide(2000))
 
     let heartBeatingStop = undefined;
-    document.getElementById('heartBeating')
+    document.getElementById('heartBeatingPlay')
         .addEventListener('click', function () {
             const block = document.getElementById('heartBeatingBlock');
             heartBeatingStop = animaster()
@@ -101,36 +34,19 @@ function addListeners() {
         });
     document.getElementById('heartBeatingStop')
         .addEventListener('click', function () {
-            heartBeatingStop.stop();
+            const block = document.getElementById('heartBeatingBlock');
+            heartBeatingStop.stop(block);
         });
 
-    let comboReset = undefined;
-    document.getElementById('comboPlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('comboBlock');
-            let a = animaster().addScale(300, 0.1)
-                .addMove(300, {x:40, y: 40});
-            let b = a.addScale(500, 1,1)
-                    .addChangeBackGroundColor(500, "black");
-            console.log(a._steps);
-            console.log(b._steps);
-            comboReset = animaster()
-                .addFadeIn(500)
-                .addMove(200, {x: 40, y: 40})
-                .addScale(200, 1.3)
-                .addMove(200, {x: 80, y: 0})
-                .addScale(800, 1)
-                .addMove(200, {x: 40, y: -40})
-                .addScale(800, 0.7)
-                .addFadeOut(10)
-                .play(block);
-        });
-
-    document.getElementById('comboReset')
-        .addEventListener('click', function () {
-            const block = document.getElementById('comboBlock');
-            comboReset.reset(block);
-        });
+    addHandlerOnButton('combo', animaster()
+        .addFadeIn(500)
+        .addMove(200, {x: 40, y: 40})
+        .addScale(200, 1.3)
+        .addMove(200, {x: 80, y: 0})
+        .addScale(800, 1)
+        .addMove(200, {x: 40, y: -40})
+        .addScale(800, 0.7)
+        .addFadeOut(10));
 
     const worryAnimationHandler = animaster()
         .addMove(200, {x: 80, y: 0})
@@ -152,13 +68,13 @@ function animaster() {
     }
 
     let simpleCommands = {
-        fadeIn (element, duration) {
+        fadeIn(element, duration) {
             element.style.transitionDuration = `${duration}ms`;
             element.classList.remove('hide');
             element.classList.add('show');
         },
 
-        resetFadeIn (element) {
+        resetFadeIn(element) {
             element.style = null;
             element.classList.add('hide');
             element.classList.remove('show');
@@ -170,27 +86,27 @@ function animaster() {
             element.classList.add('hide');
         },
 
-        resetFadeOut (element) {
+        resetFadeOut(element) {
             element.style = null;
             element.classList.add('show');
             element.classList.remove('hide');
         },
 
-        move (element, duration, translation) {
+        move(element, duration, translation) {
             element.style.transitionDuration = `${duration}ms`;
             element.style.transform = getTransform(translation, null);
         },
 
-        scale (element, duration, ratio) {
+        scale(element, duration, ratio) {
             element.style.transitionDuration = `${duration}ms`;
             element.style.transform = getTransform(null, ratio);
         },
 
-        resetMoveAndScale (element) {
+        resetMoveAndScale(element) {
             element.style = null;
         },
 
-        changeBackGroundColor (element, duration, color) {
+        changeBackGroundColor(element, duration, color) {
             element.style.transitionDuration = `${duration}ms`;
             element.style.backgroundColor = color;
         }
@@ -203,7 +119,7 @@ function animaster() {
     };
 
     this.addShowAndHide = function (duration) {
-        let copy = this.addFadeIn(duration * 1 / 3)._steps;
+        let copy = this.addFadeIn(duration * 1 / 3);
         copy = copy.addDelay(duration * 1 / 3);
         copy = copy.addFadeOut(duration * 1 / 3);
         return copy;
@@ -259,7 +175,10 @@ function animaster() {
         let runCommands = () => {
             let duration = 0;
             for (const anim of this._steps) {
+                console.log(anim);
+                console.log(simpleCommands[anim["command"]]);
                 arrayTimeOut.push(setTimeout(() =>
+                    simpleCommands[anim["command"]] === undefined ||
                     simpleCommands[anim["command"]](element, anim["duration"],
                         anim["translation"] || anim["ratio"] || anim["color"]), duration));
                 duration += anim["duration"];
