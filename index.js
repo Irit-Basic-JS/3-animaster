@@ -4,25 +4,29 @@ function addListeners() {
     document.getElementById('fadeInPlay')
         .addEventListener('click', function () {
             const block = document.getElementById('fadeInBlock');
-            animaster().fadeIn(block, 5000);
+            // animaster().fadeIn(block, 1000);
+            animaster().addFadeIn(1000).play(block);
         });
 
     document.getElementById('fadeOutPlay')
         .addEventListener('click', function () {
             const block = document.getElementById('fadeOutBlock');
-            animaster().fadeOut(block, 5000);
+            // animaster().fadeOut(block, 1000);
+            animaster().addFadeOut(1000).play(block);
         });
 
     document.getElementById('movePlay')
         .addEventListener('click', function () {
             const block = document.getElementById('moveBlock');
-            animaster().move(block, 1000, {x: 100, y: 10});
+            // animaster.move(block, 1000, { x:100, y: 10 });
+            animaster().addMove(1000, { x: 100, y: 10 }).play(block);
         });
 
     document.getElementById('scalePlay')
         .addEventListener('click', function () {
             const block = document.getElementById('scaleBlock');
-            animaster().scale(block, 1000, 1.25);
+            // animaster().scale(block, 1000, 1.25);
+            animaster().addScale(1000, 1.25).play(block);
         });
 
     let state;
@@ -128,6 +132,7 @@ function animaster() {
     }
 
     return {
+        _steps: [],
         fadeIn,
         fadeOut,
         move,
@@ -135,6 +140,72 @@ function animaster() {
         moveAndHide,
         showAndHide,
         heartBeating,
+
+        addMove: function (duration, translation) {
+            this._steps.push({
+                name: 'move',
+                duration,
+                translation,
+            });
+
+            return this;
+        },
+
+        addScale: function (duration, ratio) {
+            this._steps.push({
+                name: 'scale',
+                duration,
+                ratio,
+            });
+
+            return this;
+        },
+
+        addFadeIn: function (duration) {
+            this._steps.push({
+                name: 'fadeIn',
+                duration,
+            });
+
+            return this;
+        },
+
+        addFadeOut: function (duration) {
+            this._steps.push({
+                name: 'fadeOut',
+                duration,
+            });
+
+            return this;
+        },
+
+        play: function (element) {
+            let step = this._steps.shift();
+
+            switch (step.name) {
+                case 'move': 
+                    move(element, step.duration, step.translation);
+                    break;
+                case 'scale':
+                    scale(element, step.duration, step.ratio);
+                    break;
+                case 'fadeIn':
+                    fadeIn(element, step.duration);
+                    break;
+                case 'fadeOut':
+                    fadeOut(element, step.duration);
+                    break;
+            }
+            
+            let timerId = setInterval(() => {  
+                if (this._steps.length !== 0) { 
+                    this.play(element);
+                } else {
+                    clearInterval(timerId);
+                }
+
+            }, step.duration);
+        }
     }
 }
 
