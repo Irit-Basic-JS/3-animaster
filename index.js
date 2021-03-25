@@ -35,6 +35,17 @@ function addListeners() {
             state.move = animaster().addMove(1000, { x: 100, y: 10 }).play(block);
         });
 
+    // const worryAnimationHandler = animaster()
+    //     .addMove(200, {x: 80, y: 0})
+    //     .addMove(200, {x: 0, y: 0})
+    //     .addMove(200, {x: 80, y: 0})
+    //     .addMove(200, {x: 0, y: 0})
+    //     .buildHandler();
+    
+    // document
+    //     .getElementById('moveBlock')
+    //     .addEventListener('click', worryAnimationHandler);
+
     document.getElementById('moveReset')
         .addEventListener('click', function () {
             state.move.reset();
@@ -251,6 +262,10 @@ function animaster() {
             });
 
             return this;
+        },
+
+        buildHandler: function () {
+            return (element) => this.play(element.currentTarget);
         },
 
         play: function (element) {
