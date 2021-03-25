@@ -172,7 +172,7 @@ function animaster() {
     animaster.moveAndHide = function(element, duration){
         element.style.transitionDuration =  `${duration}ms`;
         animaster.addMove(0.4 * duration, {x: 100, y: 20}).play(element);
-        setTimeout(() => (animaster.addFadeOut(0.6 * duration), 0.4 * duration).play(element));
+        setTimeout(() => (animaster.addFadeOut(0.6 * duration)).play(element), 0.4 * duration);
         let reset = function() {
             animaster.resetFadeOut(element);
         }
@@ -182,7 +182,7 @@ function animaster() {
     animaster.showAndHide = function(element, duration){
         element.style.transitionDuration =  `${duration}ms`;
         animaster.addFadeIn(duration * 1/3).play(element);
-        setTimeout(() => (animaster.addFadeOut(1/3 * duration), 2/3 * duration).play(element));
+        setTimeout(() => (animaster.addFadeOut(1/3 * duration)).play(element), 2/3 * duration);
     }
 
     animaster.heartBeating = function(element, duration, ratio){
