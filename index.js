@@ -146,11 +146,13 @@ function animaster() {
     }
 
     function heartBeating(element, duration, ratio) {
-        let timerId1 = setInterval(() => scale(element, duration, ratio), duration);
-        let timerId2 = setInterval(() => scale(element, duration, 1), duration * 2);
+        scale(element, duration, ratio);
+        let timerId1 = setInterval(() => scale(element, duration, 1), duration);
+        let timerId2 = setInterval(() => scale(element, duration, ratio), duration * 2);
 
         return {
             stop() {
+                scale(element, duration, 1);
                 clearInterval(timerId1);
                 clearInterval(timerId2);
             }
