@@ -89,13 +89,25 @@ function addListeners() {
     document.getElementById('heartBeatingPlay')
         .addEventListener('click', function () {
             const block = document.getElementById('heartBeatingBlock');
-            state.heartBeating = animaster().addHeartBeating(500, 1.4).play(block, true);
+            state.heartBeating = animaster().addHeartBeating(500, 1.4).play(block);
         });
 
     document.getElementById('heartBeatingStop')
         .addEventListener('click', function () {
             state.heartBeating.stop();
         });
+
+    document.getElementById('transformToCirclePlay')
+        .addEventListener('click', function () {
+            const block = document.getElementById('transformToCircle');
+            // state.transformToCircle = animaster().transformToCircle(element, 1000);
+            state.transformToCircle = animaster().addtransformToCircle(1000).play(block);
+        });
+
+    document.getElementById('transformToCircleReset')
+        .addEventListener('click', function () {
+            state.transformToCircle.reset();
+        })
 }
 
 function animaster() {
@@ -170,6 +182,15 @@ function animaster() {
         }
     }
 
+    function transformToCircle (element, duration) {
+        element.style.transitionDuration = `${duration}ms`;
+        element.style.borderRadius = '50%';
+
+        return {
+            reset() { resettransformToCircle(element) }
+        };
+    }
+
     function resetFadeIn (element) {
         element.style.transitionDuration = '0ms';
         element.classList.remove('show');
@@ -187,6 +208,11 @@ function animaster() {
         element.style.transform = getTransform({ x: 0, y: 0 }, 1);
     }
 
+    function resettransformToCircle (element) {
+        element.style.transitionDuration = '0ms';
+        element.style.borderRadius = null;
+    }
+
     return {
         _steps: [],
         fadeIn,
@@ -196,6 +222,7 @@ function animaster() {
         moveAndHide,
         showAndHide,
         heartBeating,
+        transformToCircle,
 
         addMove: function (duration, translation) {
             this._steps.push({
@@ -255,6 +282,15 @@ function animaster() {
             return this;
         },
 
+        addtransformToCircle: function (duration) {
+            this._steps.push({
+                name: 'transformToCircle',
+                duration,
+            })
+
+            return this;
+        },
+
         addDelay: function (duration) {
             this._steps.push({
                 name: 'delay',
@@ -290,6 +326,9 @@ function animaster() {
                     break;
                 case 'heartBeating':
                     state = heartBeating(element, step.duration, step.ratio);
+                    break;
+                case 'transformToCircle':
+                    state = transformToCircle(element, step.duration);
                     break;
                 case 'delay':
                     break;
