@@ -213,6 +213,13 @@ function animaster() {
         element.style.borderRadius = null;
     }
 
+    function getCopy(source) {
+        const stepsCopy = Object.assign([], source._steps);
+        const copy = animaster();
+        copy._steps = stepsCopy;
+        return copy;
+    }
+
     return {
         _steps: [],
         fadeIn,
@@ -225,79 +232,87 @@ function animaster() {
         transformToCircle,
 
         addMove: function (duration, translation) {
-            this._steps.push({
+            const copy = getCopy(this);
+            copy._steps.push({
                 name: 'move',
                 duration,
                 translation,
             });
 
-            return this;
+            return copy;
         },
 
         addScale: function (duration, ratio) {
-            this._steps.push({
+            const copy = getCopy(this);
+            copy._steps.push({
                 name: 'scale',
                 duration,
                 ratio,
             });
 
-            return this;
+            return copy;
         },
 
         addFadeIn: function (duration) {
-            this._steps.push({
+            const copy = getCopy(this);
+            copy._steps.push({
                 name: 'fadeIn',
                 duration,
             });
 
-            return this;
+            return copy;
         },
 
         addFadeOut: function (duration) {
-            this._steps.push({
+            const copy = getCopy(this);
+            copy._steps.push({
                 name: 'fadeOut',
                 duration,
             });
 
-            return this;
+            return copy;
         },
 
         addMoveAndHide: function (duration, translation) {
-            this._steps.push({
+            const copy = getCopy(this);
+            copy._steps.push({
                 name: 'moveAndHide',
                 duration,
                 translation,
             });
 
-            return this;
+            return copy;
         },
 
         addHeartBeating: function (duration, ratio) {
-            this._steps.push({
+            const copy = getCopy(this);
+            copy._steps.push({
                 name: 'heartBeating',
                 duration,
                 ratio
             });
 
-            return this;
+            return copy;
         },
 
-            this._steps.push({
         addTransformToCircle: function (duration) {
+            const copy = getCopy(this);
+            copy._steps.push({
                 name: 'transformToCircle',
                 duration,
             })
 
-            return this;
+            return copy;
         },
 
         addDelay: function (duration) {
-            this._steps.push({
+            const copy = getCopy(this);
+            copy._steps.push({
                 name: 'delay',
                 duration,
             });
 
-            return this;
+            return copy;
         },
 
         buildHandler: function () {
