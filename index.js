@@ -101,7 +101,7 @@ function addListeners() {
         .addEventListener('click', function () {
             const block = document.getElementById('transformToCircle');
             // state.transformToCircle = animaster().transformToCircle(element, 1000);
-            state.transformToCircle = animaster().addtransformToCircle(1000).play(block);
+            state.transformToCircle = animaster().addTransformToCircle(1000).play(block);
         });
 
     document.getElementById('transformToCircleReset')
@@ -187,7 +187,7 @@ function animaster() {
         element.style.borderRadius = '50%';
 
         return {
-            reset() { resettransformToCircle(element) }
+            reset() { resetTransformToCircle(element) }
         };
     }
 
@@ -208,7 +208,7 @@ function animaster() {
         element.style.transform = getTransform({ x: 0, y: 0 }, 1);
     }
 
-    function resettransformToCircle (element) {
+    function resetTransformToCircle (element) {
         element.style.transitionDuration = '0ms';
         element.style.borderRadius = null;
     }
@@ -282,8 +282,8 @@ function animaster() {
             return this;
         },
 
-        addtransformToCircle: function (duration) {
             this._steps.push({
+        addTransformToCircle: function (duration) {
                 name: 'transformToCircle',
                 duration,
             })
