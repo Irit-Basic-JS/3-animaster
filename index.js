@@ -2,17 +2,20 @@ addListeners();
 
 function addListeners() {
 
-    function addHandlerOnButton(id, animation) {
+    function addHandlerOnButton(id, animation, cycled = false) {
         let reset = undefined;
         document.getElementById(`${id}Play`)
             .addEventListener('click', function () {
                 const block = document.getElementById(`${id}Block`);
-                reset = animation.play(block);
+                reset = animation.play(block, cycled);
             });
-        document.getElementById(`${id}Reset`)
+
+        document.getElementById(cycled ? `${id}Stop` : `${id}Reset`)
             .addEventListener('click', function () {
                 const block = document.getElementById(`${id}Block`);
-                reset.reset(block);
+                console.log(reset);
+                reset = !cycled? reset["reset"] : reset["stop"];
+                reset(block);
             });
     }
 
@@ -23,20 +26,7 @@ function addListeners() {
     addHandlerOnButton('background', animaster().addChangeBackGroundColor(1000, "black"));
     addHandlerOnButton('moveAndHide', animaster().addMoveAndHide(2000, {x: 100, y: 20}));
     addHandlerOnButton('showAndHide', animaster().addShowAndHide(2000))
-
-    let heartBeatingStop = undefined;
-    document.getElementById('heartBeatingPlay')
-        .addEventListener('click', function () {
-            const block = document.getElementById('heartBeatingBlock');
-            heartBeatingStop = animaster()
-                .addHeartBeating()
-                .play(block, true);
-        });
-    document.getElementById('heartBeatingStop')
-        .addEventListener('click', function () {
-            const block = document.getElementById('heartBeatingBlock');
-            heartBeatingStop.stop(block);
-        });
+    addHandlerOnButton("heartBeating", animaster().addHeartBeating(), true)
 
     addHandlerOnButton('combo', animaster()
         .addFadeIn(500)
@@ -175,8 +165,6 @@ function animaster() {
         let runCommands = () => {
             let duration = 0;
             for (const anim of this._steps) {
-                console.log(anim);
-                console.log(simpleCommands[anim["command"]]);
                 arrayTimeOut.push(setTimeout(() =>
                     simpleCommands[anim["command"]] === undefined ||
                     simpleCommands[anim["command"]](element, anim["duration"],
