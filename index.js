@@ -31,7 +31,7 @@ let Animaster = new class {
 	 */
 	move(element, duration, translation) {
 		element.style.transitionDuration = `${duration}ms`;
-		element.style.transform = this._getTransform(translation, null);
+		element.style.transform = this.#getTransform(translation, null);
 	}
 
 	/**
@@ -42,7 +42,7 @@ let Animaster = new class {
 	 */
 	scale(element, duration, ratio) {
 		element.style.transitionDuration = `${duration}ms`;
-		element.style.transform = this._getTransform(null, ratio);
+		element.style.transform = this.#getTransform(null, ratio);
 	}
 
 	moveAndHide(element, duration, translation) {
@@ -60,10 +60,16 @@ let Animaster = new class {
 			this.scale(element, duration / 2, ratio);
 			setTimeout(() => this.scale(element, duration / 2, 1), duration / 2);
 		}
-		setInterval(loop, duration);
+		let timerId = setInterval(loop, duration);
+
+		return {
+			stop() {
+				clearInterval(timerId);
+			}
+		};
 	}
 
-	_getTransform(translation, ratio) {
+	#getTransform(translation, ratio) {
 		const result = [];
 		if (translation) {
 			result.push(`translate(${translation.x}px,${translation.y}px)`);
@@ -76,18 +82,32 @@ let Animaster = new class {
 }
 
 function addListeners() {
-	addListener('fadeIn', 2000);
-	addListener('fadeOut', 2000);
-	addListener('move',1000, {x: 100, y: 10});
-	addListener('scale', 1000, 1.25);
-	addListener('moveAndHide',1000, {x: 100, y: 20});
-	addListener('showAndHide', 1000);
-	addListener('heartBeating', 1000, 1.4);
+	addPlayListener('fadeIn', 2000);
+	addPlayListener('fadeOut', 2000);
+	addPlayListener('move', 1000, {x: 100, y: 10});
+	addPlayListener('scale', 1000, 1.25);
+	addPlayListener('moveAndHide', 1000, {x: 100, y: 20});
+	addPlayListener('showAndHide', 1000);
+	addPlayAndStopListener('heartBeating', 1000, 1.4);
 }
 
-function addListener(methodName, ...methodArguments) {
-	document.getElementById(`${methodName}Play`).addEventListener('click', function () {
-		const block = document.getElementById(`${methodName}Block`);
-		Animaster[methodName](block, ...methodArguments);
+function addPlayListener(method, ...args) {
+	document.getElementById(`${method}Play`).addEventListener('click', function () {
+		const block = document.getElementById(`${method}Block`);
+		Animaster[method](block, ...args);
+	});
+}
+
+function addPlayAndStopListener(method, ...args) {
+	let stopObject;
+
+	document.getElementById(`${method}Play`).addEventListener('click', function () {
+		const block = document.getElementById(`${method}Block`);
+		stopObject?.stop();
+		stopObject = Animaster[method](block, ...args);
+	});
+
+	document.getElementById(`${method}Stop`).addEventListener('click', function () {
+		stopObject.stop();
 	});
 }
