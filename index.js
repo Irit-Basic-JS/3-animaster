@@ -10,6 +10,14 @@ let Animaster = new class {
 		element.style.transitionDuration = `${duration}ms`;
 		element.classList.remove('hide');
 		element.classList.add('show');
+
+		setTimeout(() => this.#resetFadeIn(element), 1500);
+	}
+
+	#resetFadeIn(element) {
+		element.style.transitionDuration = null;
+		element.classList.add('hide');
+		element.classList.remove('show');
 	}
 
 	/**
@@ -21,6 +29,12 @@ let Animaster = new class {
 		element.style.transitionDuration = `${duration}ms`;
 		element.classList.add('hide');
 		element.classList.remove('show');
+	}
+
+	#resetFadeOut(element) {
+		element.style.transitionDuration = null;
+		element.classList.remove('hide');
+		element.classList.add('show');
 	}
 
 	/**
@@ -45,9 +59,20 @@ let Animaster = new class {
 		element.style.transform = this.#getTransform(null, ratio);
 	}
 
+	#resetMoveAndScale(element) {
+		element.style.transitionDuration = `0ms`;
+		element.style.transform = this.#getTransform(null, null);
+	}
+
 	moveAndHide(element, duration, translation) {
 		this.move(element, duration * 2 / 5, translation);
 		setTimeout(() => this.fadeOut(element, duration * 3 / 5), duration * 2 / 5);
+		return {
+			stop() {
+				Animaster.#resetMoveAndScale(element);
+				Animaster.#resetFadeOut(element);
+			}
+		}
 	}
 
 	showAndHide(element, duration) {
@@ -86,7 +111,7 @@ function addListeners() {
 	addPlayListener('fadeOut', 2000);
 	addPlayListener('move', 1000, {x: 100, y: 10});
 	addPlayListener('scale', 1000, 1.25);
-	addPlayListener('moveAndHide', 1000, {x: 100, y: 20});
+	addPlayAndStopListener('moveAndHide', 1000, {x: 100, y: 20});
 	addPlayListener('showAndHide', 1000);
 	addPlayAndStopListener('heartBeating', 1000, 1.4);
 }
