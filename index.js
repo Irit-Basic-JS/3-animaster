@@ -1,6 +1,8 @@
 addListeners();
 
 let Animaster = new class {
+	#steps = [];
+
 	/**
 	 * Блок плавно появляется из прозрачного.
 	 * @param element — HTMLElement, который надо анимировать
@@ -43,7 +45,7 @@ let Animaster = new class {
 	 * @param duration — Продолжительность анимации в миллисекундах
 	 * @param translation — объект с полями x и y, обозначающими смещение блока
 	 */
-	move(element, duration, translation) {
+	move(element, duration, translation = {}) {
 		element.style.transitionDuration = `${duration}ms`;
 		element.style.transform = this.#getTransform(translation, null);
 	}
@@ -103,6 +105,23 @@ let Animaster = new class {
 			result.push(`scale(${ratio})`);
 		}
 		return result.join(' ');
+	}
+
+	addMove(duration, ratio = 1, translation = {x: 0, y: 0}) {
+		this.#steps.push({
+			name: 'move',
+			duration,
+			ratio,
+			translation,
+		});
+
+		return this;
+	}
+
+	play(element) {
+		for (const animation of this.#steps) {
+			this[animation.name](animation.duration, animation.ratio, animation.translation);
+		}
 	}
 }
 
