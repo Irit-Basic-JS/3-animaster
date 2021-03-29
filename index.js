@@ -1,13 +1,13 @@
 addListeners();
 const customAnimation = animaster()
-.addMove(200, {x: 40, y: 40})
-.addScale(800, 1.3)
-.addMove(200, {x: 80, y: 0})
-.addScale(800, 1)
-.addMove(200, {x: 40, y: -40})
-.addScale(800, 0.7)
-.addMove(200, {x: 0, y: 0})
-.addScale(800, 1);
+    .addMove(200, {x: 40, y: 40})
+    .addScale(800, 1.3)
+    .addMove(200, {x: 80, y: 0})
+    .addScale(800, 1)
+    .addMove(200, {x: 40, y: -40})
+    .addScale(800, 0.7)
+    .addMove(200, {x: 0, y: 0})
+    .addScale(800, 1);
 
 function addListeners() {
     addListener("fadeIn", "Play", (block) => animaster().addFadeIn(1000).play(block));
@@ -27,23 +27,23 @@ function addListeners() {
 }
 
 function addListener(name, param, func) {
-	document.querySelector(`#${name}${param}`)
-	.addEventListener("click", function () {
-		const block = document.querySelector(`#${name}Block`);
-		func(block);
-	});
+    document.querySelector(`#${name}${param}`)
+        .addEventListener("click", function () {
+            const block = document.querySelector(`#${name}Block`);
+            func(block);
+        });
 }
 
-function animaster(steps){
+function animaster(steps) {
     return {
         _steps: steps ? steps : [],
         fadeIn(element, step) {
-            element.style.transitionDuration =  `${step.duration}ms`;
+            element.style.transitionDuration = `${step.duration}ms`;
             element.classList.remove('hide');
             element.classList.add('show');
         },
         fadeOut(element, step) {
-            element.style.transitionDuration =  `${step.duration}ms`;
+            element.style.transitionDuration = `${step.duration}ms`;
             element.classList.remove('show');
             element.classList.add('hide');
         },
@@ -52,7 +52,7 @@ function animaster(steps){
             element.style.transform = getTransform(step.translation, null);
         },
         scale(element, step) {
-            element.style.transitionDuration =  `${step.duration}ms`;
+            element.style.transitionDuration = `${step.duration}ms`;
             element.style.transform = getTransform(null, step.ratio);
         },
         heartBeating(element) {
@@ -132,6 +132,7 @@ function animaster(steps){
         }
     }
 }
+
 /**
  * Блок плавно появляется из прозрачного.
  * @param element — HTMLElement, который надо анимировать
@@ -147,7 +148,7 @@ function animaster(steps){
 
 
 
-/**
+ /**
  * Функция, увеличивающая/уменьшающая элемент
  * @param element — HTMLElement, который надо анимировать
  * @param duration — Продолжительность анимации в миллисекундах
