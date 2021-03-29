@@ -77,9 +77,6 @@ function animaster(steps) {
             this.fadeIn(element, {duration: step.duration / 3});
             setTimeout(() => this.fadeOut(element, {duration: step.duration / 3}), step.duration / 3);
         },
-        delay(element, step) {
-
-        },
         resetFadeIn(element) {
             element.style = null;
             element.classList.remove("show");
