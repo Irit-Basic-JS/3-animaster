@@ -119,9 +119,8 @@ let Animaster = new class {
 	}
 
 	play(element) {
-		for (const animation of this.#steps) {
+		for (const animation of this.#steps)
 			this[animation.name](animation.duration, animation.ratio, animation.translation);
-		}
 	}
 }
 
