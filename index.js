@@ -116,12 +116,6 @@ function animaster() {
         moveAndHide(element, duration) {
             move(element, 2 * duration / 5, {x: 100, y: 20});
             setTimeout(() => fadeOut(element, 3 * duration / 5), 2 * duration / 5);
-
-            return {
-                reset() {
-                    resetFadeOut(element);
-                }
-            };
         },
         
         showAndHide(element, duration) {
