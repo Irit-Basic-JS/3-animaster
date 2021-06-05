@@ -4,6 +4,7 @@
     border-radius: 10px;
     border: 2px solid #ddd;
     position: relative;
+    transition-duration: initial;
 }
 
 .container-header {
