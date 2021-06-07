@@ -40,6 +40,10 @@
     transition-timing-function: ease;
 }
 
+.red {
+    background-color: red;
+}
+
 .hide {
     opacity: 0;
 }
