@@ -18,14 +18,17 @@
     font-style: italic;
 }
 
+
 .button {
     margin-left: 15px;
     padding: 5px 10px;
     border-radius: 3px;
     font-size: 12px;
-    background: none;
+    background-color: #CAE691;
     border: 1px solid #ccc;
+    
 }
+
 
 .block {
     position: relative;
@@ -33,12 +36,13 @@
     height: 100px;
     padding: 5px;
     box-sizing: border-box;
-    background-color: #8d3f8d;
+    background-color: #DB4949;
     border: 2px solid #421456;
     color: white;
     transition-property: all;
     transition-timing-function: ease;
 }
+
 
 .hide {
     opacity: 0;
