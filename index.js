@@ -55,6 +55,7 @@ function animaster() {
         let copy = Object.assign({}, this);
         copy._steps = copy._steps.slice();
         return copy
+
     }
 
     let simpleCommands = {
