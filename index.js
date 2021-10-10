@@ -7,8 +7,7 @@ addListeners(false,
 
 addListeners(true,
     ['heartBeating'],
-    ['showAndHide', 1000],
-    ['fuckingMagician'])
+    ['showAndHide', 1000]);
 
 function addListeners(cycled, ...listeners) {
     for (let listener of listeners) {
@@ -32,6 +31,16 @@ const worryAnimationHandler = animaster()
 document
     .getElementById('worryAnimationBlock')
     .addEventListener('click', worryAnimationHandler);
+
+const rotateAndScaleHandler = animaster()
+    .addRotateAndScale(1000, 0.1, 360)
+    .addDelay(500)
+    .addRotateAndScale(1000, 1, 0.1)
+    .buildHandler();
+
+document
+    .getElementById('rotateAndScaleBlock')
+    .addEventListener('click', rotateAndScaleHandler);
 
 function animaster() {
     return {
@@ -92,8 +101,8 @@ function animaster() {
         addMove(duration, translation) {
             this._steps.push({
                 duration,
-                action: element => element.style.transform = getTransform(translation, null),
-                reverse: element => element.style.transform = getTransform(null, null)
+                action: element => element.style.transform = getTransform(translation),
+                reverse: element => element.style.transform = getTransform()
             });
             return this.copy();
         },
@@ -102,7 +111,7 @@ function animaster() {
             this._steps.push({
                 duration,
                 action: element => element.style.transform = getTransform(null, ratio),
-                reverse: element => element.style.transform = getTransform(null, null)
+                reverse: element => element.style.transform = getTransform()
             });
             return this.copy();
         },
@@ -116,47 +125,11 @@ function animaster() {
             return this.copy();
         },
 
-        addRotate(duration, angle) {
+        addRotateAndScale(duration, ratio, angle) {
             this._steps.push({
                 duration,
-                action: element => element.style.transform = `rotate(${angle}deg)`,
-                reverse: element => element.style.transform = getTransform(null, null)
-            });
-            return this.copy();
-        },
-
-        addBorderRadius(duration, radius) {
-            this._steps.push({
-                duration,
-                action: element => element.style.borderRadius = `${radius}px`,
-                reverse: element => element.style.borderRadius = null
-            });
-            return this.copy();
-        },
-
-        addDashedBorder(duration) {
-            this._steps.push({
-                duration,
-                action: element => element.style.borderStyle = 'dashed',
-                reverse: element => element.style.borderStyle = 'solid'
-            });
-            return this.copy();
-        },
-
-        addSolidBorder(duration) {
-            this._steps.push({
-                duration,
-                action: element => element.style.borderStyle = 'solid',
-                reverse: element => element.style.borderStyle = 'dashed'
-            });
-            return this.copy();
-        },
-
-        addBorderWidth(duration, width) {
-            this._steps.push({
-                duration,
-                action: element => element.style.borderWidth = `${width}px`,
-                reverse: element => element.style.borderWidth = '2px'
+                action: element => element.style.transform = getTransform(null, ratio, angle),
+                reverse: element => element.style.transform = getTransform()
             });
             return this.copy();
         },
@@ -202,25 +175,10 @@ function animaster() {
                 .addScale(250, 1)
                 .addDelay(500)
                 .play(element, true);
-        },
-
-        fuckingMagician(element) {
-            return this
-                .addRotate(1000, 360)
-                .addBorderRadius(1000, 50)
-                .addDashedBorder(0)
-                .addBorderWidth(1000, 15)
-                .addDelay(1000)
-                .addBorderWidth(1000, 2)
-                .addSolidBorder(0)
-                .addBorderRadius(1000, 0)
-                .addRotate(1000, 0)
-                .addDelay(1000)
-                .play(element, true);
         }
     }
 
-    function getTransform(translation, ratio) {
+    function getTransform(translation = null, ratio = null, angle = null) {
         const result = [];
         if (translation) {
             result.push(`translate(${translation.x}px,${translation.y}px)`);
@@ -228,12 +186,15 @@ function animaster() {
         if (ratio) {
             result.push(`scale(${ratio})`);
         }
+        if (angle) {
+            result.push(`rotate(${angle}deg)`);
+        }
 
         return result.join(' ');
     }
 
     function setMode(element, show) {
         element.classList.remove(show ? 'hide' : 'show');
-        element.classList.add(show ? 'show' : 'hide')
+        element.classList.add(show ? 'show' : 'hide');
     }
 }
