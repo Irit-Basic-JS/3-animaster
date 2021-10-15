@@ -40,9 +40,16 @@
     transition-timing-function: ease;
 }
 
+.radial-background {
+    background-image: repeating-radial-gradient(transparent, transparent 9px, black 11px, black 20px);
+    background-position: center;
+    background-size: 100px;
+}
+
 .hide {
     opacity: 0;
 }
+
 .show {
     opacity: 1;
 }
