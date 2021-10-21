@@ -189,7 +189,7 @@ class Animaster {
     }
 
     custom(duration, translation) {
-        let timing = duration;
+        let timing  = duration / 6;
         return this.addBorderRadiusChange(timing, '50%', '50%', '50%', '50%')
             .addMove(timing, translation)
             .addBorderRadiusChange(timing, '100%', '0%', '100%', '0%')
@@ -235,7 +235,7 @@ const animations = [{
 
 {
     name: 'custom',
-    duration: 1000,
+    duration: 2000,
     args: { x: 200, y: 0 }
 }
 ];
