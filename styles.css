@@ -33,7 +33,8 @@
     height: 100px;
     padding: 5px;
     box-sizing: border-box;
-    background-color: #8d3f8d;
+    /* background-color: #8d3f8d; */
+    background-color: #6ccf45;
     border: 2px solid #421456;
     color: white;
     transition-property: all;
