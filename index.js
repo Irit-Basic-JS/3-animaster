@@ -210,7 +210,7 @@ addListeners();
 function addListeners() {
     animations.forEach(anim => addListener(anim.name, anim.duration, anim.cycled, anim.args));
 
-    const builtCustomAnim = animaster().addMove(1000, {x: 0,y: -100}).addMove(1000, {x: 0, y: 100}).buildHandler();
+    const builtCustomAnim = animaster().addMove(1000, {x: 0,y: -100}).addMove(1000, {x: 0, y: 0}).buildHandler();
     document.getElementById('customBlock').addEventListener('click', builtCustomAnim);
 }
 
