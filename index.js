@@ -10,8 +10,8 @@ function animaster(){
 }
 
 class AnimasterClass{
-    constructor(){
-        this._steps = []
+    constructor(info=[]){
+        this._steps = info
     };
     fadeIn=function (element, duration) {
         element.style.transitionDuration =  `${duration}ms`;
@@ -80,11 +80,16 @@ class AnimasterClass{
         element.style.transitionDuration =  `${0}ms`;
         element.style.transform = null;
     };
+    moveAndHideReset = function moveAndHideReset(element){
+        this.#resetMoveAndScale(element);
+        this.#resetFadeOut(element);
+    }
     addMove=function(duration, translation){
         this._steps.push({
             duration,
             translation,            
-            name: 'move'
+            name: 'move',
+            rewind:(element)=>{this.#resetMoveAndScale(element)} 
         });
         return this;
     };
@@ -92,47 +97,85 @@ class AnimasterClass{
         this._steps.push({            
             duration,
             ratio,       
-            name: 'scale'
+            name: 'scale',
+            rewind:(element)=>{this.#resetMoveAndScale(element)} 
         });
         return this;
     };
     addFadeIn=function(duration){
         this._steps.push({
             duration,                        
-            name: 'fadeIn'
+            name: 'fadeIn',
+            rewind:(element)=>{this.#resetFadeIn(element)} 
         });
         return this;
     };
     addFadeOut=function(duration){
         this._steps.push({
             duration,                     
-            name: 'fadeOut'
+            name: 'fadeOut',
+            rewind:(element)=>{this.#resetFadeOut(element)} 
         });
         return this;
     };
-    play=function(element){
-        let time = 0;
-        for(let i of this._steps){
+    addDelay=function(duration){
+        this._steps.push({
+            duration,                               
+            name: 'delay',
+            rewind:()=>{}            
+        });
+        return this;
+    };
+    play=function(element, cycled = false){
+        let time = 0;        
+        let allComands = () =>{
+        for(let i of this._steps)
             switch(i.name){
                 case 'move':
                     console.log('move');                    
-                    setTimeOut(()=>this.move(element, i.duration, i.translation),++time);
+                    setTimeout(()=>this.move(element, i.duration, i.translation),(++time)*i.duration);
                     break;
                 case 'scale':
                     console.log('scale');                    
-                    this.scale(element, i.duration, i.ratio);
+                    setTimeout(()=>this.scale(element, i.duration, i.ratio),(++time)*i.duration);
                     break; 
                 case 'fadeIn':
                     console.log('fadeIn');                    
-                    this.fadeIn(element, i.duration);
+                    setTimeout(()=>this.fadeIn(element, i.duration),(++time)*i.duration);
                     break; 
                 case 'fadeOut':
                     console.log('fadeOut');                    
-                    this.fadeOut(element, i.duration);
+                    setTimeout(()=>this.fadeOut(element, i.duration),(++time)*i.duration);
                     break;
-            }
+                case 'delay':
+                    console.log('delay'); 
+                    setTimeout(()=>console.log('Waited enough'), i.duration) 
+                    break;
+            }     
         }
+        if (!isNaN(y))
+            clearInterval(y);
+        
+        if (cycled)
+            y = setInterval(()=>allComands(), this._steps.reduce((x,z)=>x.duration+z.duration));
+        else
+            allComands();
+        
+        return {
+            stop: ()=>clearInterval(y),
+            reset: something =>{
+                clearTimeout(y);
+                something.style.transitionDuration=null;
+                this._steps.reverse().forEach(command=>command.rewind(something))                
+            }
+        }       
     };
+    buildHandler = function () {
+        const x = this;
+        return function() {
+            x.play(this);
+        }
+    }
 }
 // const customAnimation = animaster()
 //     .addMove(200, {x: 40, y: 40})
@@ -150,14 +193,14 @@ function addListeners() {
         .addEventListener('click', function () {
             const block = document.getElementById('fadeInBlock');
             //animaster().fadeIn(block, 5000);
-            animaster().addFadeIn(5000).play(block);
+            animaster().addFadeIn(1000).play(block);
         });
 
     document.getElementById('fadeOutPlay')
         .addEventListener('click', function () {
             const block = document.getElementById('fadeOutBlock');
             //animaster().fadeOut(block, 5000);
-            animaster().addFadeOut(5000).play(block);
+            animaster().addFadeOut(1000).play(block);
             //customAnimation.play(block);
         });
 
@@ -177,27 +220,38 @@ function addListeners() {
     document.getElementById('moveAndHidePlay')
         .addEventListener('click', function () {
             const block = document.getElementById('moveAndHideBlock');
-            animaster().moveAndHide(block, 1000, {x: 100, y: 20});
+            //animaster().moveAndHide(100, {x: 100, y: 20});
+            animaster().addMove(400, {x: 100, y: 20}).addFadeOut(600).play(block);
         });
     document.getElementById('moveAndHideReset')
         .addEventListener('click', function () {
-            const block = document.getElementById('moveAndHideBlock');          
-            animaster().resetMoveAndScale(block);
-            animaster().resetFadeOut(block);
+            const block = document.getElementById('moveAndHideBlock');                  
+            animaster().moveAndHideReset(block);            
         });
     document.getElementById('showAndHidePlay')
         .addEventListener('click', function () {
             const block = document.getElementById('showAndHideBlock');
-            animaster().showAndHide(block, 5000);
+            //animaster().showAndHide(block, 5000);
+            animaster().addFadeIn(1000).addDelay(1000).addFadeOut(1000).play(block);
         });
     document.getElementById('heartBeatingPlay')
         .addEventListener('click', function () {
             const block = document.getElementById('heartBeatingBlock');
-            timer = animaster().heartBeating(block, 500, 1.4);
+            //timer = animaster().heartBeating(block, 500, 1.4);
+            timer=animaster().addScale(500, 1.4).addDelay(500).addScale(500, 1).addDelay(500).play(block, true);
         });
     document.getElementById('heartBeatingStop')
         .addEventListener('click', function () {            
             timer.stop();
+        });
+    document.getElementById('CustomPlay')
+        .addEventListener('click', function () {
+            const block = document.getElementById('CustomBlock');
+            animaster().addMove(250, {x: 200, y: 0})
+            .addMove(250, {x: 0, y: 100})
+            .addMove(250, {x: 100, y: -100})
+            .addMove(250, {x: 200, y: 100})
+            .addMove(250, {x: 0, y: 0}).play(block, true);
         });
 }
 
