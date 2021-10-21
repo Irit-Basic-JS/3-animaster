@@ -24,7 +24,7 @@ function addListeners() {
     document.getElementById('moveHidePlay')
         .addEventListener('click', function () {
             const block = document.getElementById('moveHideBlock');
-            timer = animaster().moveAndHide(block, 1000);
+            animaster().moveAndHide(1000).play(block);
         });
 
     document.getElementById('moveHideReset')
@@ -33,10 +33,10 @@ function addListeners() {
             animaster().resetMoveAndHide(block);
         });
 
-    document.getElementById('showandHide')
+    document.getElementById('showAndHide')
         .addEventListener('click', function () {
             const block = document.getElementById('showHideBlock');
-            animator.showAndHide(block, 1000);
+            animaster().showAndHide(1000).play(block);
         });
 
     document.getElementById('heartBeating')
@@ -59,7 +59,7 @@ class Animaster {
     constructor() {
         this._steps = [];
     }
-    
+
     play(element, looped = false) {
         const doSteps = (index) => {
             const duration = this._steps[index].duration;
@@ -69,16 +69,6 @@ class Animaster {
                 timer = setTimeout(doSteps, duration, (index + 1) % this._steps.length);
         };
         let timer = setTimeout(doSteps, 0, 0);
-        const origClassList = element.classList;
-        return {
-            stop: () => clearTimeout(timer),
-            reset: element => {
-                clearTimeout(timer);
-                element.style.transitionDuration = null;
-                this._steps.reverse().forEach(step => step.undo(element));
-                element.classList = origClassList;
-            }
-        }
     }
 
     cloneAnimaster() {
@@ -125,10 +115,20 @@ class Animaster {
         clone._steps.push({
             duration,
             action: element => {
-                element.classList.remove('hide');
-                element.classList.add('now');
+                element.classList.remove('show');
+                element.classList.add('hide');
             },
             undo: element => this.#resetFadeOut(element)
+        });
+        return clone;
+    }
+
+    addDelay(duration) {
+        const clone = this.cloneAnimaster();
+        clone._steps.push({
+            duration,
+            action: () => {},
+            undo: () => {}
         });
         return clone;
     }
@@ -194,12 +194,12 @@ class Animaster {
         element.style.transform = getTransform(null, ratio);
     }
 
-    moveAndHide(element, duration) {
+    moveAndHide(duration) {
         const timing = duration / 5;
-        this.addMove(timing * 2, { x: 100, y: 20 }).play(element);
-        //setTimeout(() => this.addFadeOut(timing * 3).play(element), timing * 2);
+        return this.addMove(timing * 2, { x: 100, y: 20 } )
+        .addFadeOut(timing * 3);
         //this.move(element, timing * 2, { x: 100, y: 20 });
-        setTimeout(() => this.fadeOut(element, timing * 3), timing * 2);
+        //setTimeout(() => this.fadeOut(element, timing * 3), timing * 2);
     }
 
     resetMoveAndHide = function resetMoveAndHide(element) {
@@ -207,13 +207,13 @@ class Animaster {
         this.#resetMoveAndScale(element);
     }
 
-    showAndHide(element, duration) {
+    showAndHide(duration) {
         const timing = duration / 3;
-        //this.addFadeIn(timing).play(element);
-        //console.log('HAPPY!!')
-        //setTimeout(() => this.addFadeOut(timing).play(element), timing);
-        this.fadeIn(element, timing);
-        setTimeout(() => this.fadeOut(element, timing), timing);
+        return this.addFadeOut(timing)
+        .addDelay(timing)
+        .addFadeIn(timing);
+        //this.fadeIn(element, timing);
+        //setTimeout(() => this.fadeOut(element, timing), timing);
     }
 
     heartBeating(element, duration, ratio) {
