@@ -59,22 +59,7 @@ class Animaster {
     constructor() {
         this._steps = [];
     }
-
-    // фнкция Стёпы
-    //play(element) {
-    //    let animationTime = 0;
-    //    for (let i of this._steps) {
-    //        if (i[0] == 'move') {
-    //            setTimeout(() => this.move(element, i[1], i[2]), i[1] + animationTime);
-    //        }
-    //        else if (i[0] == 'scale') {
-    //            setTimeout(() => this.scale(element, i[1], i[2]), i[1] + animationTime);
-    //        }
-    //        animationTime += i[1];
-    //    }
-    //}
-
-    // функция Богдана
+    
     play(element, looped = false) {
         const doSteps = (index) => {
             const duration = this._steps[index].duration;
