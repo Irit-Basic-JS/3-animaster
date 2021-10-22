@@ -1,12 +1,3 @@
-addListeners(false,
-    ['fadeIn', 5000],
-    ['move', 1000, {x: 100, y: 10}],
-    ['scale', 1000, 1.25],
-    ['moveAndHide', 1000, {x: 100, y: 20}],
-    ['showAndHide', 1000]);
-
-addListeners(true, ['heartBeating']);
-
 function addListeners(cycled, ...listeners) {
     for (let listener of listeners) {
         let block = document.getElementById(listener[0] + 'Block');
@@ -18,6 +9,15 @@ function addListeners(cycled, ...listeners) {
             });
     }
 }
+
+addListeners(false,
+    ['fadeIn', 5000],
+    ['move', 1000, {x: 100, y: 10}],
+    ['scale', 1000, 1.25],
+    ['moveAndHide', 1000, {x: 100, y: 20}],
+    ['showAndHide', 1000]);
+
+addListeners(true, ['heartBeating']);
 
 function getTransform(translation, ratio) {
     const result = [];
