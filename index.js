@@ -90,7 +90,7 @@ function animaster() {
 
         resetMoveAndScale(element) {
             element.style.transitionDuration = null;
-            element.style.transform = getTransform(0, 1);
+            element.style.transform = getTransform(null, 1);
         },
 
         addMove(duration, translation) {
