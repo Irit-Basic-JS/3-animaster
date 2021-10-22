@@ -30,11 +30,6 @@ function getTransform(translation, ratio) {
     return result.join(' ');
 }
 
-function setMode(element, show) {
-    element.classList.remove(show ? 'hide' : 'show');
-    element.classList.add(show ? 'show' : 'hide');
-}
-
 function animaster() {
     return {
         _steps: [],
